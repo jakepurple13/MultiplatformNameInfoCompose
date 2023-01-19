@@ -1,11 +1,10 @@
 package com.programmersbox.shared
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -23,14 +22,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.programmersbox.info.NameInfoDatabase
-import com.squareup.sqldelight.runtime.coroutines.asFlow
-import com.squareup.sqldelight.runtime.coroutines.mapToList
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -38,7 +35,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.jetbrains.skia.Image
 import kotlin.math.roundToInt
 
 @Composable
@@ -171,15 +167,10 @@ internal fun SecondRow(vm: NameInfoViewModel) {
                             .padding(4.dp)
                     )
 
-                    val loading = loadImage(country.flagUrl).value
-
-                    if(loading is ImageLoading.Loaded) {
-                        Image(
-                            bitmap = loading.image,
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
+                    NetworkImage(
+                        country.flagUrl,
+                        modifier = Modifier.size(24.dp)
+                    )
 
                     Text(country.country_id)
                     /*GlideImage(
@@ -227,14 +218,10 @@ internal fun Recent(vm: NameInfoViewModel) {
 
                         r.nationality.take(3).forEach {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                val loading = loadImage(it.flagUrl).value
-                                if(loading is ImageLoading.Loaded) {
-                                    Image(
-                                        bitmap = loading.image,
-                                        modifier = Modifier.size(12.dp),
-                                        contentDescription = null
-                                    )
-                                }
+                                NetworkImage(
+                                    it.flagUrl,
+                                    modifier = Modifier.size(12.dp)
+                                )
                                 Text("${(it.probability * 100).roundToInt()}%")
                             }
                         }
@@ -337,7 +324,7 @@ internal class NameInfoViewModel(driverFactory: DriverFactory, private val scope
 
         runBlocking { db.nameInfoDao().getAll().firstOrNull()?.lastOrNull()?.let { ifyInfo = it } }*/
         db.getInfo().asFlow()
-            .mapToList()
+            .mapToList(scope.coroutineContext)
             .onEach {
                 recent.clear()
                 recent.addAll(it.mapToIfy())
@@ -377,13 +364,6 @@ internal enum class NetworkState { Loading, NotLoading }
 
 internal val MaleColor = Color(0xff448aff)
 internal val FemaleColor = Color(0xfff06292)
-
-@Composable
-internal fun loadImage(url: String): State<ImageLoading> = produceState<ImageLoading>(ImageLoading.Loading) {
-    value = ImageLoading.Loaded(
-        Image.makeFromEncoded(HttpClient().get(url).readBytes()).toComposeImageBitmap()
-    )
-}
 
 internal sealed class ImageLoading {
     object Loading : ImageLoading()

@@ -1,8 +1,8 @@
 package com.programmersbox.shared
 
+import app.cash.sqldelight.db.SqlDriver
+import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import com.programmersbox.info.NameInfoDatabase
-import com.squareup.sqldelight.db.SqlDriver
-import com.squareup.sqldelight.sqlite.driver.JdbcSqliteDriver
 
 internal actual class DriverFactory {
     actual fun createDriver(): SqlDriver {

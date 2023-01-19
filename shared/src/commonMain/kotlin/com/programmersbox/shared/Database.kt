@@ -1,9 +1,9 @@
 package com.programmersbox.shared
 
+import app.cash.sqldelight.db.SqlDriver
 import com.programmersbox.info.NameInfoDatabase
 import com.programmersbox.info.NameInfoItem
 import com.programmersbox.info.NameInfoQueries
-import com.squareup.sqldelight.db.SqlDriver
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

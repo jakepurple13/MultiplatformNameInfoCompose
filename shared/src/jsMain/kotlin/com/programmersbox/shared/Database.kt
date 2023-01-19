@@ -1,8 +1,11 @@
 package com.programmersbox.shared
 
+import app.cash.sqldelight.db.SqlDriver
+import app.cash.sqldelight.driver.sqljs.initSqlDriver
 import com.programmersbox.info.NameInfoDatabase
-import com.squareup.sqldelight.db.SqlDriver
-import com.squareup.sqldelight.drivers.sqljs.initSqlDriver
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.asDeferred
 

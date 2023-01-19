@@ -6,6 +6,7 @@ allprojects {
         google()
         mavenCentral()
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        maven(url = "https://oss.sonatype.org/content/repositories/snapshots")
     }
 }
 
@@ -17,11 +18,11 @@ plugins {
     id("com.android.library") apply false
     id("org.jetbrains.compose") apply false
     id("org.jetbrains.kotlin.plugin.serialization") apply false
-    id("com.squareup.sqldelight") apply false
+    id("app.cash.sqldelight") apply false
 }
 
 buildscript {
     dependencies {
-        classpath("com.squareup.sqldelight:gradle-plugin:1.5.4")
+        classpath("app.cash.sqldelight:gradle-plugin:2.0.0-alpha04")
     }
 }

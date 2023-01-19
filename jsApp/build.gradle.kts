@@ -10,12 +10,20 @@ kotlin {
         browser {
             useCommonJs()
             binaries.executable()
+            commonWebpackConfig {
+                scssSupport {
+                    enabled = true
+                }
+            }
         }
+        nodejs()
     }
     sourceSets {
         val jsMain by getting {
             dependencies {
                 implementation(project(":shared"))
+                implementation(npm("sql.js", "1.7.0"))
+                implementation(devNpm("copy-webpack-plugin", "9.1.0"))
             }
         }
     }

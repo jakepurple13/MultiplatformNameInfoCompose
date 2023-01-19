@@ -4,7 +4,7 @@ plugins {
     id("com.android.library")
     kotlin("native.cocoapods")
     id("kotlinx-serialization")
-    id("com.squareup.sqldelight")
+    id("app.cash.sqldelight")
 }
 
 group = "com.programmersbox"
@@ -16,6 +16,8 @@ kotlin {
     jvm("desktop")
     js(IR) {
         browser()
+        binaries.executable()
+        nodejs()
     }
     ios()
     iosX64()
@@ -36,7 +38,7 @@ kotlin {
         extraSpecAttributes["resources"] = "['src/sharedMain/resources/**', 'src/iosMain/resources/**']"
     }
     sourceSets {
-        val sqldelight = "1.5.4"
+        val sqldelight = extra["sqldelight.version"] as String
         val ktorVersion = extra["ktor.version"] as String
         val commonMain by getting {
             dependencies {
@@ -49,8 +51,8 @@ kotlin {
                 api("io.ktor:ktor-client-content-negotiation:$ktorVersion")
                 api("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
                 api("io.ktor:ktor-client-logging:$ktorVersion")
-                api("com.squareup.sqldelight:runtime:$sqldelight")
-                api("com.squareup.sqldelight:coroutines-extensions:$sqldelight")
+                api("app.cash.sqldelight:runtime:$sqldelight")
+                api("app.cash.sqldelight:coroutines-extensions:$sqldelight")
             }
         }
 
@@ -65,7 +67,8 @@ kotlin {
                 api("androidx.appcompat:appcompat:1.6.0")
                 api("androidx.core:core-ktx:1.9.0")
                 api("io.ktor:ktor-client-android:$ktorVersion")
-                api("com.squareup.sqldelight:android-driver:$sqldelight")
+                api("app.cash.sqldelight:android-driver:$sqldelight")
+                api("io.coil-kt:coil-compose:2.2.2")
             }
         }
 
@@ -79,7 +82,7 @@ kotlin {
             dependencies {
                 api(compose.preview)
                 api("io.ktor:ktor-client-cio:$ktorVersion")
-                api("com.squareup.sqldelight:sqlite-driver:$sqldelight")
+                api("app.cash.sqldelight:sqlite-driver:$sqldelight")
             }
         }
 
@@ -89,7 +92,7 @@ kotlin {
             dependencies {
                 api(compose.web.core)
                 api("io.ktor:ktor-client-js:$ktorVersion")
-                api("com.squareup.sqldelight:sqljs-driver:$sqldelight")
+                api("app.cash.sqldelight:sqljs-driver:$sqldelight")
             }
         }
 
@@ -99,7 +102,7 @@ kotlin {
         val iosMain by getting {
             dependencies {
                 api("io.ktor:ktor-client-darwin:$ktorVersion")
-                api("com.squareup.sqldelight:native-driver:$sqldelight")
+                api("app.cash.sqldelight:native-driver:$sqldelight")
             }
             iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)

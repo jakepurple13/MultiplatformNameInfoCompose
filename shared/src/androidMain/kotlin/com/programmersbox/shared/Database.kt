@@ -1,9 +1,9 @@
 package com.programmersbox.shared
 
 import android.content.Context
+import app.cash.sqldelight.db.SqlDriver
+import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.programmersbox.info.NameInfoDatabase
-import com.squareup.sqldelight.android.AndroidSqliteDriver
-import com.squareup.sqldelight.db.SqlDriver
 
 internal actual class DriverFactory(private val context: Context) {
     actual fun createDriver(): SqlDriver {
