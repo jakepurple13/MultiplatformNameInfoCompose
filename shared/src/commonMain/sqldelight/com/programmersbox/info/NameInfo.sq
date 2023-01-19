@@ -1,0 +1,15 @@
+CREATE TABLE IF NOT EXISTS NameInfoItem(
+    name TEXT NOT NULL PRIMARY KEY,
+    age INTEGER NOT NULL,
+    gender TEXT NOT NULL,
+    nationality TEXT NOT NULL
+);
+
+getInfo:
+SELECT * FROM NameInfoItem;
+
+addInfo:
+INSERT OR REPLACE INTO NameInfoItem(name, age, gender, nationality) VALUES (?,?,?,?);
+
+deleteInfo:
+DELETE FROM NameInfoItem WHERE age = ?;

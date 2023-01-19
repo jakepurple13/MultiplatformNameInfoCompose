@@ -1,0 +1,10 @@
+# Project exclude paths
+/.gradle/
+/android/build/
+/build/
+/desktop/build/
+/desktop/build/classes/kotlin/jvm/main/
+/jsApp/build/
+/shared/build/
+/shared/build/classes/kotlin/desktop/main/
+/shared/build/classes/kotlin/iosSimulatorArm64/main/klib/
