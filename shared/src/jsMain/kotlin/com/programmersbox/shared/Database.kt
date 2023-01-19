@@ -7,11 +7,11 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.asDeferred
+import kotlinx.coroutines.await
 
 internal actual class DriverFactory {
     @OptIn(ExperimentalCoroutinesApi::class)
-    actual fun createDriver(): SqlDriver {
-        return initSqlDriver(NameInfoDatabase.Schema).asDeferred().getCompleted()
+    actual suspend fun createDriver(): SqlDriver {
+        return initSqlDriver(NameInfoDatabase.Schema).await()
     }
 }

@@ -32,15 +32,16 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @Composable
-internal fun App(driverFactory: DriverFactory) {
+internal fun App(driverFactory: DriverFactory, isDarkMode: Boolean = isSystemInDarkTheme()) {
     MaterialTheme(
-        colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()
+        colorScheme = if (isDarkMode) darkColorScheme() else lightColorScheme()
     ) {
         Surface {
             Box(
@@ -309,7 +310,7 @@ internal class NameInfoViewModel(driverFactory: DriverFactory, private val scope
         )
     )
 
-    private val db by lazy { createDatabase(driverFactory).nameInfoQueries }
+    private val db by lazy { scope.async { createDatabase(driverFactory).nameInfoQueries } }
 
     private var start = true
 
@@ -323,17 +324,20 @@ internal class NameInfoViewModel(driverFactory: DriverFactory, private val scope
             .launchIn(scope)
 
         runBlocking { db.nameInfoDao().getAll().firstOrNull()?.lastOrNull()?.let { ifyInfo = it } }*/
-        db.getInfo().asFlow()
-            .mapToList(scope.coroutineContext)
-            .onEach {
-                recent.clear()
-                recent.addAll(it.mapToIfy())
-                if(start) {
-                    recent.lastOrNull()?.let { i -> ifyInfo = i }
-                    start = false
+        scope.launch {
+            db.await()
+                .getInfo().asFlow()
+                .mapToList(scope.coroutineContext)
+                .onEach {
+                    recent.clear()
+                    recent.addAll(it.mapToIfy())
+                    if (start) {
+                        recent.lastOrNull()?.let { i -> ifyInfo = i }
+                        start = false
+                    }
                 }
-            }
-            .launchIn(scope)
+                .launchIn(scope)
+        }
     }
 
     fun getInfo() {
@@ -345,7 +349,7 @@ internal class NameInfoViewModel(driverFactory: DriverFactory, private val scope
                 service.getInfo(n).fold(
                     onSuccess = {
                         ifyInfo = it
-                        db.addInfo(it)
+                        scope.launch { db.await().addInfo(it) }
                     },
                     onFailure = { it.printStackTrace() }
                 )

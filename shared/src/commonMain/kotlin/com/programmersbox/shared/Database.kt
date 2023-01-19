@@ -9,10 +9,10 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 internal expect class DriverFactory {
-    fun createDriver(): SqlDriver
+    suspend fun createDriver(): SqlDriver
 }
 
-internal fun createDatabase(driverFactory: DriverFactory): NameInfoDatabase {
+internal suspend fun createDatabase(driverFactory: DriverFactory): NameInfoDatabase {
     val driver = driverFactory.createDriver()
     val database = NameInfoDatabase(driver)
     // Do more work with the database (see below).

@@ -53,6 +53,7 @@ kotlin {
                 api("io.ktor:ktor-client-logging:$ktorVersion")
                 api("app.cash.sqldelight:runtime:$sqldelight")
                 api("app.cash.sqldelight:coroutines-extensions:$sqldelight")
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
             }
         }
 

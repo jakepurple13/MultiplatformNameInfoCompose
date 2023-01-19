@@ -9,5 +9,5 @@ public actual fun getPlatformName(): String {
 
 @Composable
 public fun UIShow() {
-    App(remember { DriverFactory() })
+    App(remember { DriverFactory() }, true)
 }
