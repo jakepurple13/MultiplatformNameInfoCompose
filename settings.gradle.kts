@@ -19,9 +19,12 @@ pluginManagement {
     }
 }
 
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 rootProject.name = "MultiplatformNameInfoCompose"
 
 include(":android")
 include(":desktop")
 include(":jsApp")
 include(":shared")
+include(":database")

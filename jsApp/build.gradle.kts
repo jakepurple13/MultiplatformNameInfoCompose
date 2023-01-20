@@ -16,6 +16,7 @@ kotlin {
                 }
             }
         }
+        binaries.executable()
         nodejs()
     }
     sourceSets {

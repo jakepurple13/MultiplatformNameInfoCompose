@@ -12,4 +12,4 @@ addInfo:
 INSERT OR REPLACE INTO NameInfoItem(name, age, gender, nationality) VALUES (?,?,?,?);
 
 deleteInfo:
-DELETE FROM NameInfoItem WHERE age = ?;
+DELETE FROM NameInfoItem WHERE name = ?;

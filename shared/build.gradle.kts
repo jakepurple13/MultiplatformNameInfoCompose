@@ -70,6 +70,7 @@ kotlin {
                 api("io.ktor:ktor-client-android:$ktorVersion")
                 api("app.cash.sqldelight:android-driver:$sqldelight")
                 api("io.coil-kt:coil-compose:2.2.2")
+                api(projects.database)
             }
         }
 
@@ -84,6 +85,7 @@ kotlin {
                 api(compose.preview)
                 api("io.ktor:ktor-client-cio:$ktorVersion")
                 api("app.cash.sqldelight:sqlite-driver:$sqldelight")
+                api(projects.database)
             }
         }
 
@@ -104,6 +106,7 @@ kotlin {
             dependencies {
                 api("io.ktor:ktor-client-darwin:$ktorVersion")
                 api("app.cash.sqldelight:native-driver:$sqldelight")
+                //api(projects.database)
             }
             iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)

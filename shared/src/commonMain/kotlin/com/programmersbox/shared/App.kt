@@ -15,6 +15,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,20 +27,17 @@ import androidx.compose.ui.text.*
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import app.cash.sqldelight.coroutines.asFlow
-import app.cash.sqldelight.coroutines.mapToList
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @Composable
-internal fun App(driverFactory: DriverFactory, isDarkMode: Boolean = isSystemInDarkTheme()) {
+internal fun App(isDarkMode: Boolean = isSystemInDarkTheme()) {
     MaterialTheme(
         colorScheme = if (isDarkMode) darkColorScheme() else lightColorScheme()
     ) {
@@ -50,7 +48,7 @@ internal fun App(driverFactory: DriverFactory, isDarkMode: Boolean = isSystemInD
             ) {
                 val scope = rememberCoroutineScope()
                 NameInfoCompose(
-                    vm = remember { NameInfoViewModel(driverFactory, scope) }
+                    vm = remember { NameInfoViewModel(scope) }
                 )
             }
         }
@@ -244,13 +242,15 @@ internal fun Recent(vm: NameInfoViewModel) {
                         )
                         Text(gender?.capitalGender().orEmpty())
                     }
+
+                    Column {
+                        IconButton(onClick = { vm.onRemovePress(r) }) { Icon(Icons.Default.Clear, null) }
+                    }
                 }
             }
         }
     }
 }
-
-internal fun Int.toComposeColor() = Color(this)
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
@@ -296,7 +296,7 @@ internal fun Circle(
     }
 }
 
-internal class NameInfoViewModel(driverFactory: DriverFactory, private val scope: CoroutineScope) {
+internal class NameInfoViewModel(private val scope: CoroutineScope) {
 
     private val service = ApiService()
     var state by mutableStateOf(NetworkState.NotLoading)
@@ -310,7 +310,7 @@ internal class NameInfoViewModel(driverFactory: DriverFactory, private val scope
         )
     )
 
-    private val db by lazy { scope.async { createDatabase(driverFactory).nameInfoQueries } }
+    private val db by lazy { IfyInfoDatabase(scope) }
 
     private var start = true
 
@@ -325,12 +325,10 @@ internal class NameInfoViewModel(driverFactory: DriverFactory, private val scope
 
         runBlocking { db.nameInfoDao().getAll().firstOrNull()?.lastOrNull()?.let { ifyInfo = it } }*/
         scope.launch {
-            db.await()
-                .getInfo().asFlow()
-                .mapToList(scope.coroutineContext)
+            db.list()
                 .onEach {
                     recent.clear()
-                    recent.addAll(it.mapToIfy())
+                    recent.addAll(it)
                     if (start) {
                         recent.lastOrNull()?.let { i -> ifyInfo = i }
                         start = false
@@ -349,7 +347,7 @@ internal class NameInfoViewModel(driverFactory: DriverFactory, private val scope
                 service.getInfo(n).fold(
                     onSuccess = {
                         ifyInfo = it
-                        scope.launch { db.await().addInfo(it) }
+                        scope.launch { db.saveIfy(it) }
                     },
                     onFailure = { it.printStackTrace() }
                 )
@@ -362,6 +360,10 @@ internal class NameInfoViewModel(driverFactory: DriverFactory, private val scope
         ifyInfo = info
     }
 
+    fun onRemovePress(info: IfyInfo) {
+        scope.launch { db.removeIfy(info) }
+    }
+
 }
 
 internal enum class NetworkState { Loading, NotLoading }
@@ -371,5 +373,5 @@ internal val FemaleColor = Color(0xfff06292)
 
 internal sealed class ImageLoading {
     object Loading : ImageLoading()
-    data class Loaded(val image: ImageBitmap): ImageLoading()
+    data class Loaded(val image: ImageBitmap) : ImageLoading()
 }

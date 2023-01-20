@@ -23,6 +23,7 @@ plugins {
 
 buildscript {
     dependencies {
+        classpath("io.realm.kotlin:gradle-plugin:1.5.2")
         classpath("app.cash.sqldelight:gradle-plugin:2.0.0-alpha04")
     }
 }

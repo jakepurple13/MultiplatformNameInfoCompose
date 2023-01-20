@@ -4,6 +4,8 @@ import app.cash.sqldelight.db.SqlDriver
 import com.programmersbox.info.NameInfoDatabase
 import com.programmersbox.info.NameInfoItem
 import com.programmersbox.info.NameInfoQueries
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -18,6 +20,12 @@ internal suspend fun createDatabase(driverFactory: DriverFactory): NameInfoDatab
     // Do more work with the database (see below).
 
     return database
+}
+
+internal expect class IfyInfoDatabase(scope: CoroutineScope) {
+    suspend fun list(): Flow<List<IfyInfo>>
+    suspend fun saveIfy(ifyInfo: IfyInfo)
+    suspend fun removeIfy(ifyInfo: IfyInfo)
 }
 
 internal fun NameInfoQueries.addInfo(info: IfyInfo) {
