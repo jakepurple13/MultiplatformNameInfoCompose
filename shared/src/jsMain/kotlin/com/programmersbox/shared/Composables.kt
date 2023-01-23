@@ -13,9 +13,14 @@ import org.jetbrains.skia.Image
 
 @Composable
 internal fun loadImage(url: String): State<ImageLoading> = produceState<ImageLoading>(ImageLoading.Loading) {
-    value = ImageLoading.Loaded(
-        Image.makeFromEncoded(HttpClient().get(url).readBytes()).toComposeImageBitmap()
-    )
+    try {
+        value = ImageLoading.Loaded(
+            Image.makeFromEncoded(HttpClient().get(url).readBytes()).toComposeImageBitmap()
+        )
+    } catch (e: Exception) {
+        println(url)
+        e.printStackTrace()
+    }
 }
 
 @Composable
