@@ -6,8 +6,10 @@ import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 internal class ApiService {
@@ -45,7 +47,8 @@ internal class ApiService {
     }
 
     suspend fun getGenderInfo(name: String, countryId: String = Locale.current.region) =
-        client.get("$genderizeUrl?name=$name&country_id=$countryId").body<GenderizeInfo>()
+        client.get("$genderizeUrl?name=$name&country_id=$countryId").bodyAsText()
+            .let { Json.decodeFromString<Gender>(it) }//body<GenderizeInfo>()
 
     suspend fun getAgeInfo(name: String, countryId: String = Locale.current.region) =
         client.get("$agifyUrl?name=$name&country_id=$countryId").body<AgifyInfo>()

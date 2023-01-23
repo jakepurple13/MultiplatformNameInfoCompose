@@ -35,7 +35,7 @@ kotlin {
             isStatic = true
             linkerOpts.add("-lsqlite3")
         }
-        extraSpecAttributes["resources"] = "['src/sharedMain/resources/**', 'src/iosMain/resources/**']"
+        extraSpecAttributes["resources"] = "['src/commonMain/resources/**', 'src/iosMain/resources/**']"
     }
     sourceSets {
         val sqldelight = extra["sqldelight.version"] as String
