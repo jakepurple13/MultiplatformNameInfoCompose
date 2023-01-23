@@ -30,10 +30,9 @@ import androidx.compose.ui.unit.dp
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @Composable
@@ -344,7 +343,7 @@ internal class NameInfoViewModel(private val scope: CoroutineScope) {
             val n = name.trim()
                 .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
             recent.find { it.name == n }?.let { ifyInfo = it } ?: run {
-                service.getInfo(n).fold(
+                service.getInfo(n, "us").fold(
                     onSuccess = {
                         ifyInfo = it
                         scope.launch { db.saveIfy(it) }

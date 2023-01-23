@@ -110,6 +110,7 @@ kotlin {
                 api(compose.web.core)
                 api("io.ktor:ktor-client-js:$ktorVersion")
                 api("app.cash.sqldelight:sqljs-driver:$sqldelight")
+                api(npm("decamelize", "4.0.0", generateExternals = true))
             }
         }
 
@@ -129,7 +130,7 @@ kotlin {
         }
     }
 
-    explicitApi()
+    //explicitApi()
 }
 
 android {

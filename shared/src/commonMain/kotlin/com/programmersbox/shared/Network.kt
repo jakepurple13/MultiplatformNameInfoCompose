@@ -23,9 +23,7 @@ internal class ApiService {
     private val client by lazy {
         HttpClient {
             install(Logging)
-            install(ContentNegotiation) {
-                json(json)
-            }
+            install(ContentNegotiation) { json(json) }
         }
     }
 
@@ -45,6 +43,19 @@ internal class ApiService {
             nationality = nation.country
         )
     }
+
+    /*suspend fun getInfo(name: String, countryId: String = Locale.current.region): IfyInfo {
+        val gender = getGenderInfo(name, countryId)
+        val age = getAgeInfo(name, countryId)
+        val nation = getNationalInfo(name, countryId)
+
+        return IfyInfo(
+            name = age.name,
+            age = age.age,
+            gender = Gender(gender.gender, gender.probability * 100),
+            nationality = nation.country
+        )
+    }*/
 
     suspend fun getGenderInfo(name: String, countryId: String = Locale.current.region) =
         client.get("$genderizeUrl?name=$name&country_id=$countryId").bodyAsText()
