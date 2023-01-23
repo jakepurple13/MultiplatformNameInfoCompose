@@ -32,10 +32,24 @@ kotlin {
         podfile = project.file("../iosApp/Podfile")
         framework {
             baseName = "shared"
-            isStatic = true
-            linkerOpts.add("-lsqlite3")
+            isStatic = false
+            //linkerOpts.add("-lsqlite3")
+            embedBitcode(org.jetbrains.kotlin.gradle.plugin.mpp.Framework.BitcodeEmbeddingMode.DISABLE)
+            export("io.github.softartdev:sqlcipher-ktn-pod:1.3")
         }
         extraSpecAttributes["resources"] = "['src/commonMain/resources/**', 'src/iosMain/resources/**']"
+    }
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
+        binaries.all {
+            freeCompilerArgs += listOf(
+                "-linker-option", "-framework", "-linker-option", "Metal",
+                "-linker-option", "-framework", "-linker-option", "CoreText",
+                "-linker-option", "-framework", "-linker-option", "CoreGraphics",
+                // TODO: the current compose binary surprises LLVM, so disable checks for now.
+                "-Xdisable-phases=VerifyBitcode"
+            )
+            linkerOpts += "-lsqlite3"
+        }
     }
     sourceSets {
         val sqldelight = extra["sqldelight.version"] as String
@@ -107,6 +121,7 @@ kotlin {
                 api("io.ktor:ktor-client-darwin:$ktorVersion")
                 api("app.cash.sqldelight:native-driver:$sqldelight")
                 //api(projects.database)
+                api("io.github.softartdev:sqlcipher-ktn-pod:1.3")
             }
             iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)

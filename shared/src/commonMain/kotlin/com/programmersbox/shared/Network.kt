@@ -13,18 +13,18 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 internal class ApiService {
+    private val json = Json {
+        isLenient = true
+        prettyPrint = true
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+    }
+
     private val client by lazy {
         HttpClient {
             install(Logging)
             install(ContentNegotiation) {
-                json(
-                    Json {
-                        isLenient = true
-                        prettyPrint = true
-                        ignoreUnknownKeys = true
-                        coerceInputValues = true
-                    }
-                )
+                json(json)
             }
         }
     }
@@ -48,7 +48,7 @@ internal class ApiService {
 
     suspend fun getGenderInfo(name: String, countryId: String = Locale.current.region) =
         client.get("$genderizeUrl?name=$name&country_id=$countryId").bodyAsText()
-            .let { Json.decodeFromString<Gender>(it) }//body<GenderizeInfo>()
+            .let { json.decodeFromString<Gender>(it) }//body<GenderizeInfo>()
 
     suspend fun getAgeInfo(name: String, countryId: String = Locale.current.region) =
         client.get("$agifyUrl?name=$name&country_id=$countryId").body<AgifyInfo>()
