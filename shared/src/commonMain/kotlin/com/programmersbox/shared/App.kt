@@ -194,7 +194,7 @@ internal fun SecondRow(vm: NameInfoViewModel) {
 @Composable
 internal fun Recent(vm: NameInfoViewModel) {
     LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
+        columns = GridCells.Adaptive(175.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
